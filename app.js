@@ -1,20 +1,20 @@
-/* NEXT INNOVATION ENGINE V13
-   "Mobile Optimized & Ice Break"
-*/
+/* NEXT INNOVATION ENGINE V14.0 (Mobile Optimized) */
 
-// --- 1. DATA: DECKS ---
+// --- DATA: DECKS & ARCHETYPES ---
+// 共通デッキ（在庫が切れた時用）
+const COMMON_DECK = [
+  { type: "care", q: "緊張しなくていいよ。君の素顔が知りたい。", a: "ありがとうございます。そう言っていただけると安心します。", dmg: -5, reason: "心理的安全性を確保する良いアイスブレイクです。" },
+  { type: "check", q: "この業界に興味を持ったきっかけは？", a: "生活を便利にするサービスを作りたいと思ったからです。", dmg: 0, reason: "志望動機の基本を確認する無難な質問です。" },
+  { type: "deep", q: "学生時代に一番熱中したことは？", a: "やはりESに書いた活動ですね。寝食を忘れるほどでした。", dmg: 5, reason: "熱量の源泉を探る良い質問です。" },
+  { type: "risk", q: "苦手なタイプの人はいる？", a: "理屈だけで動かない人とは、少し合わないかもしれません。", dmg: 10, reason: "対人関係のリスクを探る重要な質問です。" }
+];
+
+// アイスブレイク用デッキ
 const ICE_BREAK_DECK = [
-  { type: "care", q: "今日はどうやってここまで来たの？", a: "電車で来ました。駅から近くて助かりました！", dmg: -5, reason: "定番のアイスブレイクです。" },
+  { type: "care", q: "今日はどうやって来たの？", a: "電車で来ました。駅から近くて助かりました！", dmg: -5, reason: "定番の雑談です。Good." },
   { type: "care", q: "オフィスの雰囲気はどう？", a: "すごく開放的で驚きました！働きやすそうですね。", dmg: -5, reason: "環境への感想を聞くことで緊張をほぐせます。" },
   { type: "care", q: "緊張してる？リラックスしていいよ。", a: "ありがとうございます…！少し肩の力が抜けました。", dmg: -5, reason: "心理的安全性を高める良い声かけです。" },
   { type: "care", q: "今日はいい天気だね。", a: "そうですね！気持ちのいい朝でした。", dmg: -5, reason: "天気の話は誰でも答えられる安全な話題です。" }
-];
-
-const COMMON_DECK = [
-  { type: "check", q: "この業界に興味を持ったきっかけは？", a: "生活を便利にするサービスを作りたいと思ったからです。", dmg: 0, reason: "志望動機の基本を確認する無難な質問です。" },
-  { type: "deep", q: "学生時代に一番熱中したことは？", a: "やはりESに書いた活動ですね。寝食を忘れるほどでした。", dmg: 5, reason: "熱量の源泉を探る良い質問です。" },
-  { type: "risk", q: "苦手なタイプの人はいる？", a: "理屈だけで動かない人とは、少し合わないかもしれません。", dmg: 10, reason: "対人関係のリスクを探る重要な質問です。" },
-  { type: "deep", q: "チームでの役割は何が多かった？", a: "調整役が多かったです。間を取り持つのが得意なので。", dmg: 0, reason: "立ち位置を確認する質問です。" }
 ];
 
 const ARCHETYPES = [
@@ -45,6 +45,19 @@ const ARCHETYPES = [
       { type: "check", q: "将来のビジョンは？", a: "スマートに働いて、最短でマネージャーになりたいです。", dmg: 0, reason: "キャリア観の確認です。" },
       { type: "care", q: "論理的で分かりやすいね。", a: "ありがとうございます。そこは意識しています。", dmg: -10, reason: "承認することで、より本音を引き出しやすくしました。" }
     ]
+  },
+  {
+    id: "planner",
+    role: "イベント企画サークル代表",
+    es: "学園祭でタピオカ店を出店。行列を作り完売させました。",
+    hidden: "具体性なし・人任せ",
+    deck: [
+      { type: "deep", q: "行列を作るためにどんな工夫をしたの？", a: "えっと、SNSとかで…いい感じに拡散しました！", dmg: 10, reason: "具体性のなさを露呈させました。" },
+      { type: "deep", q: "「いい感じ」とは具体的に？", a: "映える写真を撮って、みんなにシェアしてもらいました！", dmg: 10, reason: "さらに深掘りしましたが、浅い回答でした。" },
+      { type: "risk", q: "トラブルは起きなかった？", a: "在庫がなくなりそうでしたが、みんなの協力でなんとかなりました！", dmg: 15, reason: "問題解決能力を確認する質問です。" },
+      { type: "risk", q: "君自身の役割は何だったの？", a: "私は全体の…潤滑油的な？ムードメーカーです！", dmg: 20, reason: "主体的な行動がなかったことを見抜きました。" },
+      { type: "check", q: "大変だったことは？", a: "準備は大変でしたが、笑顔を見たら疲れも吹き飛びました！", dmg: 0, reason: "感情面の確認です。" }
+    ]
   }
 ];
 
@@ -64,8 +77,8 @@ const State = {
 const Game = {
   initInterview: function () {
     const base = ARCHETYPES[Math.floor(Math.random() * ARCHETYPES.length)];
-    const names = ["佐藤", "鈴木", "高橋", "田中"];
-    const firsts = ["翔太", "蓮", "大樹", "美咲"];
+    const names = ["佐藤", "鈴木", "高橋", "田中", "渡辺"];
+    const firsts = ["翔太", "蓮", "大樹", "美咲", "陽菜"];
     const univs = ["東都大学", "京北大学", "早慶義塾"];
 
     State.student = {
@@ -79,7 +92,7 @@ const Game = {
     State.deck = JSON.parse(JSON.stringify(base.deck)).concat(JSON.parse(JSON.stringify(COMMON_DECK)));
     State.deck.sort(() => Math.random() - 0.5);
 
-    State.turn = 0; // ICE BREAK START
+    State.turn = 0; // ICE BREAK
     State.trust = 100;
     State.detected = [];
     State.score = 0;
@@ -95,22 +108,18 @@ const Game = {
   },
 
   nextTurn: function () {
-    // Check End
     if (State.trust <= 0) { this.finish("BAD"); return; }
     if (State.turn > State.maxTurn) { this.finish("TIMEUP"); return; }
 
     let hand = [];
 
     if (State.turn === 0) {
-      // ICE BREAK PHASE
       document.getElementById('b-turn').innerText = "Ice";
       document.getElementById('coach-msg').innerText = "まずはアイスブレイクで場を温めましょう";
       hand = JSON.parse(JSON.stringify(ICE_BREAK_DECK));
     } else {
-      // MAIN PHASE
       document.getElementById('b-turn').innerText = State.turn;
       document.getElementById('coach-msg').innerText = "本質を見抜く質問を選んでください";
-      // Ensure cards
       if (State.deck.length < 4) {
         State.deck = State.deck.concat(JSON.parse(JSON.stringify(COMMON_DECK)));
         State.deck.sort(() => Math.random() - 0.5);
@@ -123,7 +132,6 @@ const Game = {
   },
 
   playCard: function (card) {
-    // Remove from deck if main phase
     if (State.turn > 0) {
       State.deck = State.deck.filter(c => c.q !== card.q);
     }
@@ -133,7 +141,6 @@ const Game = {
     setTimeout(() => {
       UI.addLog("stu", card.a);
 
-      // Update State
       if (State.turn > 0) {
         State.trust -= card.dmg;
         if (State.trust > 100) State.trust = 100;
@@ -165,21 +172,24 @@ const Game = {
     const riskFound = State.detected.includes("risk");
 
     if (reason === "BAD") {
-      grade = "D"; fb = "圧迫しすぎて信頼崩壊。";
+      grade = "D"; fb = "圧迫しすぎて信頼関係が崩壊しました。";
     } else if (riskFound) {
-      grade = "A"; fb = `見事です！学生の「${State.student.hidden}」という本性を見抜きました。`;
+      grade = "A"; fb = `お見事です！表面的なESに騙されず、学生の「${State.student.hidden}」という本性を見抜きました。`;
     } else {
-      grade = "C"; fb = "核心（リスク）には触れられませんでした。";
+      grade = "C"; fb = "会話は弾みましたが、核心には触れられませんでした。";
     }
 
     document.getElementById('res-grade').innerText = grade;
-    document.getElementById('res-grade').style.color = grade === "A" ? "#10b981" : (grade === "D" ? "#ef4444" : "#f59e0b");
+    document.getElementById('res-grade').style.background = grade === "A" ? "-webkit-linear-gradient(45deg, #10b981, #3b82f6)" : "#64748b";
+    document.getElementById('res-grade').style.webkitBackgroundClip = "text";
+    document.getElementById('res-grade').style.webkitTextFillColor = "transparent";
+
     document.getElementById('res-feedback').innerText = fb;
     document.getElementById('res-identity').innerText = `正体: ${State.student.role} / 裏特性: ${State.student.hidden}`;
   },
 
   copyLog: function () {
-    const txt = State.history.map(h => `T${h.turn}: ${h.q} -> [${h.type}]`).join("\n");
+    const txt = State.history.map(h => `T${h.turn}: ${h.q} -> ${h.score}`).join("\n");
     navigator.clipboard.writeText(txt).then(() => alert("ログをコピーしました"));
   }
 };
@@ -208,6 +218,7 @@ const UI = {
     cards.forEach(card => {
       const btn = document.createElement('button');
       btn.className = "cmd-btn";
+
       let cat = "質問";
       let cls = "";
       if (card.type === "risk") { cat = "⚠️ 追求"; cls = "cat-risk"; }
@@ -215,7 +226,7 @@ const UI = {
       if (card.type === "care") { cat = "✨ 共感"; cls = "cat-care"; }
       if (State.turn === 0) { cat = "☕ 雑談"; cls = "cat-care"; }
 
-      btn.innerHTML = `<span class="cmd-cat ${cls}">${cat}</span> <span class="cmd-text">${card.q}</span>`;
+      btn.innerHTML = `<span class="cmd-head" style="color:var(--primary)">${cat}</span><span class="cmd-body">${card.q}</span>`;
       btn.onclick = () => Game.playCard(card);
       grid.appendChild(btn);
     });
@@ -231,12 +242,9 @@ const UI = {
   },
 
   updateHUD: function () {
+    document.getElementById('b-turn').innerText = State.turn;
     document.getElementById('b-trust-val').innerText = State.trust + "%";
     document.getElementById('b-trust-bar').style.width = Math.max(0, State.trust) + "%";
-    const bar = document.getElementById('b-trust-bar');
-    if (State.trust < 30) bar.style.background = "#ef4444";
-    else if (State.trust < 60) bar.style.background = "#f59e0b";
-    else bar.style.background = "#10b981";
   },
 
   renderReview: function () {
@@ -247,25 +255,25 @@ const UI = {
       div.className = `review-item ${h.score}`;
       div.innerHTML = `
         <span class="rev-turn">Turn ${h.turn}</span>
-        <div class="rev-q">${h.q}</div>
-        <div class="rev-advice"><span class="advice-label">解説:</span> ${h.reason}</div>
+        <span class="rev-q">${h.q}</span>
+        <div class="rev-adv">解説: ${h.reason}</div>
       `;
       list.appendChild(div);
     });
   },
 
-  switchTab: function (tabName) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    if (tabName === 'summary') {
-      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+  switchTab: function (name) {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-body').forEach(c => c.classList.remove('active'));
+    if (name === 'summary') {
+      document.querySelector('.tab:nth-child(1)').classList.add('active');
       document.getElementById('tab-summary').classList.add('active');
     } else {
-      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+      document.querySelector('.tab:nth-child(2)').classList.add('active');
       document.getElementById('tab-review').classList.add('active');
     }
   }
 };
 
 // Init
-UI.switchScene('scene-dash');
+UI.showScene('scene-dash');

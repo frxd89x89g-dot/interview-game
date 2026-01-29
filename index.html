@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Next Innovation Interview V13</title>
+  <title>Next Innovation Interview V14</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,98 +14,118 @@
 <body>
 
   <div id="app">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
     <div id="scene-dash" class="scene active">
-      <div class="brand">
-        <span class="ver">Ver.13.0 Mobile</span>
-        <h1>HEAD<br>HUNTER</h1>
-        <p>Next Innovation Recruiting</p>
+      <div class="glass-panel dash-content">
+        <div class="brand">
+          <span class="ver">Ver.14.0 Neon</span>
+          <h1 class="glow-text">HEAD<br>HUNTER</h1>
+          <p>Next Innovation Recruiting</p>
+        </div>
+
+        <div class="main-char">
+          <img src="kitanon_normal.jpg" class="kitanon-float" alt="Navi">
+        </div>
+
+        <div class="status-grid">
+          <div class="stat-item">
+            <span class="label">RANK</span>
+            <strong id="d-rank">Rookie</strong>
+          </div>
+          <div class="stat-item">
+            <span class="label">SCORE</span>
+            <strong id="d-score">0</strong>
+          </div>
+        </div>
+
+        <button class="btn-neon pulse" onclick="Game.initInterview()">MISSION START</button>
       </div>
-      <div class="main-char">
-        <img src="kitanon_normal.jpg" class="kitanon-bounce" alt="Navi">
-      </div>
-      <div class="status-card">
-        <div class="row"><span>RANK</span><strong id="d-rank">Rookie</strong></div>
-        <div class="row"><span>SCORE</span><strong id="d-score">0</strong></div>
-      </div>
-      <button class="btn-start pulse" onclick="Game.initInterview()">MISSION START</button>
-      <p class="notice">※文字サイズ調整＆アイスブレイク追加版</p>
     </div>
 
     <div id="scene-battle" class="scene">
-      <div class="hud">
-        <div class="turn-counter">
+      <header class="hud glass-header">
+        <div class="turn-box">
           <span class="label">TURN</span>
-          <span class="count"><span id="b-turn">1</span>/10</span>
+          <span class="val"><span id="b-turn">1</span>/10</span>
         </div>
-        <div class="trust-meter">
-          <div class="label-row"><span>TRUST</span><span id="b-trust-val">100%</span></div>
-          <div class="bar-bg">
+        <div class="trust-box">
+          <div class="trust-label">
+            <span>TRUST</span>
+            <span id="b-trust-val">100%</span>
+          </div>
+          <div class="bar-track">
             <div class="bar-fill" id="b-trust-bar"></div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div class="candidate-stage">
-        <div class="c-card">
+      <main class="battle-main">
+        <div class="c-card glass-panel">
           <div class="c-header">
             <div class="c-icon" id="c-icon"></div>
-            <div>
+            <div class="c-meta">
               <h2 id="c-name">Loading...</h2>
               <p id="c-univ">Loading...</p>
             </div>
           </div>
-          <div class="c-es"><span class="tag">ES要約</span><span id="c-es-text">...</span></div>
-          <div class="traits-box">
-            <span class="t-label">特徴:</span>
+          <div class="c-es">
+            <span class="tag">ES</span>
+            <p id="c-es-text">...</p>
+          </div>
+          <div class="c-traits">
+            <span class="label">特徴:</span>
             <div id="c-traits-list" class="traits-list"></div>
           </div>
         </div>
-      </div>
 
-      <div class="dialogue-area" id="dialogue-scroll">
-        <div class="bubble sys">面接開始。まずはアイスブレイクで場を和ませましょう。</div>
-      </div>
-
-      <div class="command-deck">
-        <div class="deck-header">
-          <span class="coach-hint" id="coach-msg">あなたのターンです</span>
+        <div id="dialogue-scroll" class="chat-container">
+          <div class="bubble sys">面接開始。最適な質問を選んでください。</div>
         </div>
-        <div id="options-grid" class="options-grid"></div>
-      </div>
+      </main>
+
+      <footer class="command-deck glass-footer">
+        <div class="deck-info">
+          <span id="coach-msg" class="coach-text">あなたのターンです</span>
+        </div>
+        <div id="options-grid" class="options-grid">
+        </div>
+      </footer>
     </div>
 
     <div id="scene-result" class="scene">
-      <div class="result-header">
-        <h2>INTERVIEW REPORT</h2>
-        <div class="grade-box" id="res-grade">?</div>
-      </div>
+      <div class="glass-panel result-content">
+        <h2 class="res-title">INTERVIEW REPORT</h2>
+        <div class="grade-box">
+          <span class="grade-val" id="res-grade">?</span>
+        </div>
 
-      <div class="tab-menu">
-        <button class="tab-btn active" onclick="UI.switchTab('summary')">評価サマリ</button>
-        <button class="tab-btn" onclick="UI.switchTab('review')">振り返り</button>
-      </div>
+        <div class="tabs">
+          <button class="tab active" onclick="UI.switchTab('summary')">サマリ</button>
+          <button class="tab" onclick="UI.switchTab('review')">振り返り</button>
+        </div>
 
-      <div id="tab-summary" class="tab-content active">
-        <div class="report-detail">
-          <div class="identity-reveal">
+        <div id="tab-summary" class="tab-body active">
+          <div class="section">
             <h3>👤 学生の正体</h3>
-            <p id="res-identity">...</p>
+            <p id="res-identity" class="highlight-text">...</p>
             <div id="res-traits" class="final-traits"></div>
           </div>
-          <div class="feedback-box">
-            <h3>💬 総評</h3>
+          <div class="section">
+            <h3>💬 フィードバック</h3>
             <p id="res-feedback">...</p>
           </div>
         </div>
-      </div>
 
-      <div id="tab-review" class="tab-content">
-        <div class="review-list" id="review-list"></div>
-      </div>
+        <div id="tab-review" class="tab-body">
+          <div id="review-list" class="review-list"></div>
+        </div>
 
-      <div class="footer-actions">
-        <button class="btn-sub" onclick="Game.copyLog()">📋 ログをコピー</button>
-        <button class="btn-start" onclick="UI.toDash()">NEXT MISSION</button>
+        <div class="actions">
+          <button class="btn-outline" onclick="Game.copyLog()">ログ保存</button>
+          <button class="btn-neon" onclick="UI.toDash()">NEXT MISSION</button>
+        </div>
       </div>
     </div>
   </div>
