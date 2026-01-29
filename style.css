@@ -116,15 +116,15 @@ body {
 }
 
 .status-card strong {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .btn-start {
   background: var(--primary);
   color: #fff;
   border: none;
-  padding: 16px 40px;
-  font-size: 16px;
+  padding: 18px 40px;
+  font-size: 18px;
   font-weight: bold;
   border-radius: 50px;
   width: 100%;
@@ -134,14 +134,14 @@ body {
 }
 
 .notice {
-  font-size: 11px;
-  color: #666;
+  font-size: 12px;
+  color: #888;
   margin-top: 20px;
 }
 
 /* BATTLE */
 .hud {
-  height: 50px;
+  height: 60px;
   background: var(--hud);
   display: flex;
   align-items: center;
@@ -155,7 +155,7 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
 }
 
@@ -166,16 +166,16 @@ body {
 .label-row {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
-  margin-bottom: 2px;
+  font-size: 10px;
+  margin-bottom: 4px;
   font-weight: bold;
 }
 
 .bar-bg {
   width: 100%;
-  height: 6px;
+  height: 8px;
   background: #000;
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -187,14 +187,14 @@ body {
 }
 
 .candidate-stage {
-  padding: 10px 16px;
+  padding: 16px;
   background: #111;
   flex-shrink: 0;
 }
 
 .c-card {
   background: var(--card);
-  padding: 12px;
+  padding: 16px;
   border-radius: 12px;
   border: 1px solid #333;
 }
@@ -203,42 +203,43 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .c-icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: #333;
   border: 2px solid #555;
 }
 
 .c-header h2 {
-  font-size: 15px;
+  font-size: 18px;
   margin: 0;
 }
 
 .c-header p {
-  font-size: 10px;
+  font-size: 12px;
   color: #888;
   margin: 0;
 }
 
 .c-es {
-  font-size: 10px;
+  font-size: 12px;
   color: #ccc;
   background: #2a2a2a;
-  padding: 6px;
-  border-radius: 6px;
-  margin-bottom: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .tag {
-  font-size: 9px;
+  font-size: 10px;
   background: #444;
-  padding: 2px 4px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
   margin-right: 4px;
   color: #aaa;
 }
@@ -247,13 +248,13 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 11px;
   color: #888;
 }
 
 .trait-badge {
-  font-size: 9px;
-  padding: 2px 6px;
+  font-size: 10px;
+  padding: 3px 8px;
   border-radius: 4px;
   font-weight: bold;
   background: var(--accent);
@@ -271,21 +272,21 @@ body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   background: #000;
 }
 
 .bubble {
-  max-width: 85%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 12px;
+  max-width: 90%;
+  padding: 14px;
+  border-radius: 16px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
 .sys {
   align-self: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #666;
 }
 
@@ -306,27 +307,37 @@ body {
 
 .command-deck {
   background: var(--card);
-  padding: 10px;
+  padding: 12px;
   border-top: 1px solid #333;
   flex-shrink: 0;
+}
+
+.deck-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.coach-hint {
+  font-size: 12px;
+  color: #888;
 }
 
 .options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 
 .cmd-btn {
   background: #2a2a2a;
   border: 1px solid #333;
   color: #eee;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 11px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
   cursor: pointer;
   text-align: left;
-  height: 65px;
+  height: 75px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -337,13 +348,13 @@ body {
 }
 
 .cmd-cat {
-  font-size: 8px;
+  font-size: 10px;
   background: #000;
-  padding: 2px 4px;
+  padding: 2px 6px;
   border-radius: 3px;
   color: #888;
   display: inline-block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .cmd-text {
@@ -368,9 +379,10 @@ body {
 }
 
 .grade-box {
-  font-size: 60px;
+  font-size: 80px;
   font-weight: 900;
   color: var(--primary);
+  margin: 10px 0;
 }
 
 .tab-menu {
@@ -380,13 +392,14 @@ body {
 
 .tab-btn {
   flex: 1;
-  padding: 12px;
+  padding: 16px;
   background: none;
   border: none;
   color: #666;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
 }
 
 .tab-btn.active {
@@ -408,33 +421,32 @@ body {
 .identity-reveal,
 .feedback-box {
   background: #222;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
   border: 1px solid #333;
 }
 
 .identity-reveal h3,
 .feedback-box h3 {
-  font-size: 12px;
+  font-size: 14px;
   color: #888;
-  margin: 0 0 8px 0;
+  margin: 0 0 10px 0;
 }
 
 .identity-reveal p,
 .feedback-box p {
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.6;
   color: #eee;
   margin: 0;
 }
 
-/* REVIEW LIST */
 .review-item {
   background: #1e1e1e;
   border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
   border-left: 4px solid #555;
 }
 
@@ -447,27 +459,27 @@ body {
 }
 
 .rev-turn {
-  font-size: 10px;
+  font-size: 11px;
   color: #888;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   display: block;
 }
 
 .rev-q {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: #fff;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .rev-advice {
-  font-size: 11px;
+  font-size: 12px;
   color: #aaa;
   background: #2a2a2a;
-  padding: 8px;
-  border-radius: 4px;
-  margin-top: 6px;
-  line-height: 1.4;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 8px;
+  line-height: 1.5;
 }
 
 .advice-label {
@@ -476,6 +488,22 @@ body {
 }
 
 .footer-actions {
-  padding: 15px;
+  padding: 20px;
   background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-sub {
+  width: 100%;
+  max-width: 300px;
+  padding: 14px;
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
 }
