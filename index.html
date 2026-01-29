@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Next Innovation Interview V14</title>
+  <title>Next Innovation Interview V15</title>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
     rel="stylesheet">
@@ -14,21 +14,16 @@
 <body>
 
   <div id="app">
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-
     <div id="scene-dash" class="scene active">
       <div class="glass-panel dash-content">
         <div class="brand">
-          <span class="ver">Ver.14.0 Neon</span>
+          <span class="ver">Ver.15.0 Final Polish</span>
           <h1 class="glow-text">HEAD<br>HUNTER</h1>
           <p>Next Innovation Recruiting</p>
         </div>
-
         <div class="main-char">
           <img src="kitanon_normal.jpg" class="kitanon-float" alt="Navi">
         </div>
-
         <div class="status-grid">
           <div class="stat-item">
             <span class="label">RANK</span>
@@ -39,7 +34,6 @@
             <strong id="d-score">0</strong>
           </div>
         </div>
-
         <button class="btn-neon pulse" onclick="Game.initInterview()">MISSION START</button>
       </div>
     </div>
@@ -61,7 +55,7 @@
         </div>
       </header>
 
-      <main class="battle-main">
+      <main class="battle-main" id="main-scroll">
         <div class="c-card glass-panel">
           <div class="c-header">
             <div class="c-icon" id="c-icon"></div>
@@ -80,17 +74,17 @@
           </div>
         </div>
 
-        <div id="dialogue-scroll" class="chat-container">
-          <div class="bubble sys">面接開始。最適な質問を選んでください。</div>
+        <div id="chat-container" class="chat-container">
+          <div class="bubble sys">面接開始。スクロールして履歴を確認できます。</div>
         </div>
+        <div id="scroll-anchor"></div>
       </main>
 
       <footer class="command-deck glass-footer">
         <div class="deck-info">
           <span id="coach-msg" class="coach-text">あなたのターンです</span>
         </div>
-        <div id="options-grid" class="options-grid">
-        </div>
+        <div id="options-grid" class="options-grid"></div>
       </footer>
     </div>
 
@@ -100,12 +94,10 @@
         <div class="grade-box">
           <span class="grade-val" id="res-grade">?</span>
         </div>
-
         <div class="tabs">
           <button class="tab active" onclick="UI.switchTab('summary')">サマリ</button>
           <button class="tab" onclick="UI.switchTab('review')">振り返り</button>
         </div>
-
         <div id="tab-summary" class="tab-body active">
           <div class="section">
             <h3>👤 学生の正体</h3>
@@ -117,11 +109,9 @@
             <p id="res-feedback">...</p>
           </div>
         </div>
-
         <div id="tab-review" class="tab-body">
           <div id="review-list" class="review-list"></div>
         </div>
-
         <div class="actions">
           <button class="btn-outline" onclick="Game.copyLog()">ログ保存</button>
           <button class="btn-neon" onclick="UI.toDash()">NEXT MISSION</button>

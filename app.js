@@ -1,12 +1,15 @@
-/* NEXT INNOVATION ENGINE V14.0 (Mobile Optimized) */
+/* NEXT INNOVATION ENGINE V15.0 (Final Polish) */
 
 // --- DATA: DECKS & ARCHETYPES ---
-// 共通デッキ（在庫が切れた時用）
+// 共通デッキ（無限補充用）
 const COMMON_DECK = [
   { type: "care", q: "緊張しなくていいよ。君の素顔が知りたい。", a: "ありがとうございます。そう言っていただけると安心します。", dmg: -5, reason: "心理的安全性を確保する良いアイスブレイクです。" },
   { type: "check", q: "この業界に興味を持ったきっかけは？", a: "生活を便利にするサービスを作りたいと思ったからです。", dmg: 0, reason: "志望動機の基本を確認する無難な質問です。" },
   { type: "deep", q: "学生時代に一番熱中したことは？", a: "やはりESに書いた活動ですね。寝食を忘れるほどでした。", dmg: 5, reason: "熱量の源泉を探る良い質問です。" },
-  { type: "risk", q: "苦手なタイプの人はいる？", a: "理屈だけで動かない人とは、少し合わないかもしれません。", dmg: 10, reason: "対人関係のリスクを探る重要な質問です。" }
+  { type: "risk", q: "苦手なタイプの人はいる？", a: "理屈だけで動かない人とは、少し合わないかもしれません。", dmg: 10, reason: "対人関係のリスクを探る重要な質問です。" },
+  { type: "deep", q: "チームでの役割は何が多かった？", a: "調整役が多かったです。間を取り持つのが得意なので。", dmg: 0, reason: "立ち位置を確認する質問です。" },
+  { type: "check", q: "就職活動の軸は？", a: "成長できる環境かどうかを重視しています。", dmg: 0, reason: "価値観の確認です。" },
+  { type: "deep", q: "その経験から学んだことは？", a: "継続することの重要性と、仲間の大切さです。", dmg: 5, reason: "学習能力の確認です。" }
 ];
 
 // アイスブレイク用デッキ
@@ -63,14 +66,15 @@ const ARCHETYPES = [
 
 // --- 2. GAME STATE ---
 const State = {
-  turn: 0, // 0=IceBreak
+  turn: 0,
   maxTurn: 10,
   trust: 100,
   student: null,
   deck: [],
   history: [],
   detected: [],
-  score: 0
+  score: 0,
+  playedQuestions: [] // To prevent duplicate questions
 };
 
 // --- 3. ENGINE ---
@@ -88,7 +92,7 @@ const Game = {
       color: '#' + Math.floor(Math.random() * 16777215).toString(16)
     };
 
-    // Build Deck
+    // Build Deck with ID to track uniqueness
     State.deck = JSON.parse(JSON.stringify(base.deck)).concat(JSON.parse(JSON.stringify(COMMON_DECK)));
     State.deck.sort(() => Math.random() - 0.5);
 
@@ -97,6 +101,7 @@ const Game = {
     State.detected = [];
     State.score = 0;
     State.history = [];
+    State.playedQuestions = [];
 
     UI.showScene('scene-battle');
     UI.setupRoom();
@@ -108,6 +113,7 @@ const Game = {
   },
 
   nextTurn: function () {
+    // Check End
     if (State.trust <= 0) { this.finish("BAD"); return; }
     if (State.turn > State.maxTurn) { this.finish("TIMEUP"); return; }
 
@@ -120,10 +126,19 @@ const Game = {
     } else {
       document.getElementById('b-turn').innerText = State.turn;
       document.getElementById('coach-msg').innerText = "本質を見抜く質問を選んでください";
+
+      // Filter out played questions
+      State.deck = State.deck.filter(c => !State.playedQuestions.includes(c.q));
+
+      // Refill if empty
       if (State.deck.length < 4) {
-        State.deck = State.deck.concat(JSON.parse(JSON.stringify(COMMON_DECK)));
+        let freshCommon = JSON.parse(JSON.stringify(COMMON_DECK));
+        // Filter common deck too
+        freshCommon = freshCommon.filter(c => !State.playedQuestions.includes(c.q));
+        State.deck = State.deck.concat(freshCommon);
         State.deck.sort(() => Math.random() - 0.5);
       }
+
       hand = State.deck.slice(0, 4);
     }
 
@@ -132,9 +147,7 @@ const Game = {
   },
 
   playCard: function (card) {
-    if (State.turn > 0) {
-      State.deck = State.deck.filter(c => c.q !== card.q);
-    }
+    State.playedQuestions.push(card.q);
 
     UI.addLog("user", card.q);
 
@@ -176,7 +189,7 @@ const Game = {
     } else if (riskFound) {
       grade = "A"; fb = `お見事です！表面的なESに騙されず、学生の「${State.student.hidden}」という本性を見抜きました。`;
     } else {
-      grade = "C"; fb = "会話は弾みましたが、核心には触れられませんでした。";
+      grade = "C"; fb = "会話は弾みましたが、核心には触れられませんでした。もっと「追求」や「深掘り」カードで踏み込む必要があります。";
     }
 
     document.getElementById('res-grade').innerText = grade;
@@ -189,7 +202,7 @@ const Game = {
   },
 
   copyLog: function () {
-    const txt = State.history.map(h => `T${h.turn}: ${h.q} -> ${h.score}`).join("\n");
+    const txt = State.history.map(h => `T${h.turn}: ${h.q} -> [${h.type}]`).join("\n");
     navigator.clipboard.writeText(txt).then(() => alert("ログをコピーしました"));
   }
 };
@@ -209,7 +222,7 @@ const UI = {
     document.getElementById('c-es-text').innerText = s.es;
     document.getElementById('c-icon').style.backgroundColor = s.color;
     document.getElementById('c-traits-list').innerHTML = '';
-    document.getElementById('dialogue-scroll').innerHTML = '';
+    document.getElementById('chat-container').innerHTML = ''; // Clear chat
   },
 
   renderOptions: function (cards) {
@@ -233,12 +246,17 @@ const UI = {
   },
 
   addLog: function (who, text) {
-    const box = document.getElementById('dialogue-scroll');
+    const box = document.getElementById('chat-container');
     const div = document.createElement('div');
     div.className = `bubble ${who}`;
     div.innerText = text;
     box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+
+    // Auto Scroll Logic
+    setTimeout(() => {
+      const anchor = document.getElementById('scroll-anchor');
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
   },
 
   updateHUD: function () {
@@ -255,8 +273,8 @@ const UI = {
       div.className = `review-item ${h.score}`;
       div.innerHTML = `
         <span class="rev-turn">Turn ${h.turn}</span>
-        <span class="rev-q">${h.q}</span>
-        <div class="rev-adv">解説: ${h.reason}</div>
+        <div class="rev-q">${h.q}</span>
+        <div class="rev-advice"><span class="advice-label">解説:</span> ${h.reason}</div>
       `;
       list.appendChild(div);
     });
@@ -276,4 +294,4 @@ const UI = {
 };
 
 // Init
-UI.showScene('scene-dash');
+UI.switchScene('scene-dash');
