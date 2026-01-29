@@ -1,309 +1,203 @@
-/* NEXT INNOVATION ENGINE V20 (20 UNIQUE DRAMAS) */
+/* NEXT INNOVATION ENGINE V21.0 (Endless Deck & Phase Control) */
 
-// 共通デッキ（会話が尽きた時の予備）
-const COMMON_DECK = [
-  { tag: "intro", q: "自己紹介をお願いします。", a_good: "はい。大学時代は{club}に所属し、{role}として活動していました。", a_bad: "{name}です。趣味はサウナです。", dmg: 0 },
-  { tag: "es", q: "なぜこの活動に力を入れたの？", a_good: "自分の『{trait}』という強みを活かせると感じたからです。", a_bad: "なんとなく楽しそうだったのと、先輩に誘われたからです。", dmg: 0 },
-  { tag: "risk", q: "苦手なタイプの人は？", a_good: "約束を守らない人です。ただ、事情を聞いて改善を促します。", a_bad: "うるさい人とか、理屈っぽい人は無理ですね。", dmg: 10 },
-  { tag: "deep", q: "その経験で得た一番の学びは？", a_good: "一人では達成できないことも、チームなら成し遂げられることです。", a_bad: "世の中、結局は運とコネだなってことです。", dmg: 5 }
+// --- 1. HUGE COMMON POOL (50+ Questions) ---
+// phase: 'early' (Turn 1-3), 'mid' (Turn 4-7), 'late' (Turn 8-10)
+const COMMON_POOL = [
+  // EARLY: Intro & Icebreak
+  { phase: 'early', tag: 'intro', q: "この業界に興味を持ったきっかけは？", a_good: "『テクノロジーで人の可能性を広げる』という理念に共感したからです。", a_bad: "なんかかっこいいし、給料も良さそうなので。", dmg: 0 },
+  { phase: 'early', tag: 'intro', q: "自己紹介を簡単にお願いします。", a_good: "はい。{name}と申します。大学では{club}に打ち込んでいました。", a_bad: "{name}っす。よろしくです。", dmg: 0 },
+  { phase: 'early', tag: 'intro', q: "緊張していますか？", a_good: "はい、第一志望なので心臓がバクバクしています！", a_bad: "いや、全然余裕っす。", dmg: -5 },
+  { phase: 'early', tag: 'es', q: "ESに書かれている活動を選んだ理由は？", a_good: "自分の強みである『継続力』を活かせると感じたからです。", a_bad: "楽そうだったからですね。", dmg: 0 },
+  { phase: 'early', tag: 'es', q: "学生時代、一番時間を割いたことは？", a_good: "{club}での活動です。週5日練習していました。", a_bad: "バイトと遊びですね。", dmg: 0 },
+
+  // MID: Deep Dive & Competency
+  { phase: 'mid', tag: 'deep', q: "チームでの役割は何が多かった？", a_good: "リーダーを支える調整役として、意見の対立を解消していました。", a_bad: "特にないですね。言われたことをやるのが得意です。", dmg: 0 },
+  { phase: 'mid', tag: 'deep', q: "その経験から学んだことは？", a_good: "『相手の立場に立って考えること』の重要性を学びました。", a_bad: "世の中、結局は運とコネだなって学びました。", dmg: 5 },
+  { phase: 'mid', tag: 'risk', q: "苦手なタイプの人はいる？", a_good: "約束を守らない人です。ただ、背景を確認して改善を促すようにしています。", a_bad: "理屈っぽい人とか、真面目すぎる人は苦手です。", dmg: 10 },
+  { phase: 'mid', tag: 'deep', q: "モチベーションの源泉は？", a_good: "チームで目標を達成した時の達成感です。", a_bad: "お金と休みですね。", dmg: 0 },
+  { phase: 'mid', tag: 'deep', q: "一番苦労したエピソードは？", a_good: "メンバーの意見が割れて、チームが空中分解しかけた時です。", a_bad: "朝起きることですかね。", dmg: 10 },
+  { phase: 'mid', tag: 'risk', q: "大きな失敗をしたことはある？", a_good: "確認不足でミスをしたことがありますが、再発防止策を徹底しました。", a_bad: "ないですね。完璧なんで。", dmg: 20 },
+  { phase: 'mid', tag: 'check', q: "周りからどんな人だと言われる？", a_good: "『責任感が強い』とよく言われます。", a_bad: "『変わってる』ってよく言われます。", dmg: 5 },
+  { phase: 'mid', tag: 'deep', q: "自分なりの工夫はあった？", a_good: "効率化のためにツールを導入し、作業時間を20%削減しました。", a_bad: "言われた通りやっただけです。", dmg: 10 },
+  { phase: 'mid', tag: 'risk', q: "ストレスを感じる瞬間は？", a_good: "計画通りに進まない時ですが、すぐに修正プランを立てます。", a_bad: "上司に怒られた時ですね。凹みます。", dmg: 10 },
+  { phase: 'mid', tag: 'value', q: "チームワークで大切にしていることは？", a_good: "情報の透明性と、感謝を言葉にすることです。", a_bad: "仲良くすることですね。", dmg: 5 },
+
+  // LATE: Vision & Closing
+  { phase: 'late', tag: 'value', q: "就職活動の軸は？", a_good: "『自律的に働ける環境』と『社会的インパクト』の2軸です。", a_bad: "安定していて、残業が少なくて、福利厚生がいいところです。", dmg: 0 },
+  { phase: 'late', tag: 'value', q: "5年後のキャリアプランは？", a_good: "プロジェクトマネージャーとして、大規模な案件をリードしたいです。", a_bad: "まだ考えてないです。辞めてるかも。", dmg: 10 },
+  { phase: 'late', tag: 'check', q: "最後に逆質問はありますか？", a_good: "活躍している若手社員の共通点は何でしょうか？", a_bad: "残業代ってちゃんと出ますか？", dmg: 0 },
+  { phase: 'late', tag: 'check', q: "他社の選考状況は？", a_good: "IT業界を中心に受けていますが、御社が第一志望です。", a_bad: "手当たり次第受けてます。", dmg: 0 },
+  { phase: 'late', tag: 'value', q: "どんな会社で働きたい？", a_good: "変化を恐れず、常に挑戦し続ける会社です。", a_bad: "楽な会社がいいです。", dmg: 10 },
+  { phase: 'late', tag: 'check', q: "入社後にやってみたい仕事は？", a_good: "まずは営業で顧客理解を深め、将来的には企画に携わりたいです。", a_bad: "配属されたところで頑張ります。", dmg: 0 }
 ];
 
-// アイスブレイク
 const ICE_BREAK_DECK = [
-  { tag: "ice", q: "今日はどうやって来たの？", a_good: "電車で来ました。駅から近くて迷わず来れました！", a_bad: "電車っす。めっちゃ混んでて疲れました。", dmg: -5 },
-  { tag: "ice", q: "緊張してる？", a_good: "はい、第一志望なので心臓がバクバクしています！", a_bad: "いや、全然。こういうの慣れてるんで。", dmg: -5 }
+  { tag: "ice", q: "今日はどうやって来たの？", a_good: "電車で来ました。駅から近くて便利ですね。", a_bad: "電車っす。迷いました。", dmg: -5 },
+  { tag: "ice", q: "オフィスの雰囲気はどう？", a_good: "開放的で素敵ですね。", a_bad: "静かですね。", dmg: -5 },
+  { tag: "ice", q: "今日はいい天気だね。", a_good: "はい！気持ちがいいです。", a_bad: "暑いです。", dmg: -5 }
 ];
 
-// --- 20 UNIQUE ARCHETYPES (完全固有シナリオ) ---
+// --- ARCHETYPES (固有デッキは各Phase対応済とみなす) ---
+// プレースホルダー: {club}, {role}, {num}, {result}, {tech}, {term}
 const ARCHETYPES = [
-  // 1. 体育会系 (Muscle)
+  // 1. 体育会系
   {
-    id: "muscle", role: "体育会主将", club: "ラグビー部", trait: "継続力",
-    es: "部員100名のラグビー部を統率。全国大会ベスト8進出。",
-    hidden_good: "【熱血リーダー】背中で語り、組織を鼓舞する", hidden_bad: "【脳筋パワハラ】気合と根性ですべて解決しようとする",
+    id: "muscle", role: "体育会{role}",
+    es: "{club}部で{num}を統率。{result}。",
+    hidden_good: "【圧倒的行動力】論理と根性を兼ね備えたリーダー", hidden_bad: "【脳筋】気合だけで解決しようとする思考停止",
     deck: [
-      { tag: "deep", q: "練習についていけない部員への対応は？", a_good: "朝練に付き合い、個別に技術指導を行って自信をつけさせました。", a_bad: "やる気がないなら辞めろと言いました。精鋭だけで勝つのが早いので。", dmg: 10 },
-      { tag: "risk", q: "怪我でレギュラー落ちした時は？", a_good: "腐らずに分析班としてチームに貢献し、復帰を目指しました。", a_bad: "監督を恨みましたね。俺を使わないなんて見る目がない。", dmg: 20 },
-      { tag: "check", q: "主将として意識したことは？", a_good: "一番苦しい練習を、誰よりも声を出しながらやることです。", a_bad: "舐められないように、威厳を保つことっすね。", dmg: 5 },
-      { tag: "risk", q: "理不尽な伝統やルールはあった？", a_good: "ありましたが、監督と交渉して合理的なルールに変えました。", a_bad: "伝統は絶対です。理不尽に耐えてこそ強くなれるんで。", dmg: 10 }
+      { phase: 'mid', tag: "deep", q: "練習メニューを変えた理由は？", a_good: "怪我人が多かったので、科学的なメニューを導入しました。", a_bad: "伝統を守るのが大事なので、量は倍に増やしました！", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "負けた時の原因分析は？", a_good: "データを見返して、後半のスタミナ不足が敗因だと特定しました。", a_bad: "気合が足りなかったからです。次はもっと走ります！", dmg: 20 },
+      { phase: 'mid', tag: "risk", q: "理不尽な指示をされたら？", a_good: "意図を確認し、必要であれば代替案を提案します。", a_bad: "耐えます！理不尽には慣れっこなんで！", dmg: 10 },
+      { phase: 'early', tag: "check", q: "{club}を選んだ理由は？", a_good: "日本一を目指せる環境に身を置きたかったからです。", a_bad: "先輩に誘われて断れなくて。", dmg: 5 },
+      { phase: 'mid', tag: "deep", q: "チームの対立はどう解決した？", a_good: "双方の意見を聞き、共通の目標に立ち返って話し合いました。", a_bad: "飲み会で腹を割って話せば解決です！", dmg: 10 }
     ]
   },
-  // 2. インターンエース (Elite)
+  // 2. インターンエース
   {
-    id: "elite", role: "長期インターン生", club: "ITベンチャー", trait: "達成意欲",
-    es: "SaaS営業で月間売上記録を更新。MVP受賞。",
-    hidden_good: "【即戦力】高いPDCA能力と謙虚さを併せ持つ", hidden_bad: "【マウント気質】数字だけが全てだと思っている",
+    id: "elite", role: "長期インターン{role}",
+    es: "ITベンチャーで{role}。{result}。",
+    hidden_good: "【即戦力】高い成果意識とPDCA力", hidden_bad: "【天狗】自信過剰で扱いづらい",
     deck: [
-      { tag: "deep", q: "売上を伸ばすためのKPIは？", a_good: "架電数だけでなく、商談化率を重要指標に置きトークを改善しました。", a_bad: "気合で架電しまくることですね。数は正義なんで。", dmg: 5 },
-      { tag: "risk", q: "泥臭い裏方の仕事はできる？", a_good: "もちろんです。リスト作成などの地味な作業こそが成果に繋がると知っています。", a_bad: "そういうのは時給の安いバイトに任せたいですね。", dmg: 20 },
-      { tag: "deep", q: "顧客のためにあえて売らない判断はできる？", a_good: "はい。課題解決にならないなら、他社製品を勧めることもありました。", a_bad: "いや、売ってなんぼなんで。後のことはCS（カスタマーサポート）がやればいい。", dmg: 30 },
-      { tag: "check", q: "成功の要因は自分？環境？", a_good: "商材が良かったのと、先輩の指導のおかげです。", a_bad: "僕のセンスですね。どこに行っても売れる自信あります。", dmg: 10 }
+      { phase: 'mid', tag: "deep", q: "成果の要因は？", a_good: "架電数の確保だけでなく、トークスクリプトの改善を毎日行ったことです。", a_bad: "まあ、僕にはセンスがあったんでしょうね。", dmg: 5 },
+      { phase: 'mid', tag: "risk", q: "泥臭い仕事はできる？", a_good: "もちろんです。成果のためなら何でもやります。", a_bad: "そういうのは他の人に任せたいですね。", dmg: 20 },
+      { phase: 'late', tag: "deep", q: "インターンで学んだことは？", a_good: "『{term}』を回すことの重要性です。", a_bad: "学生レベルじゃ余裕だなってことですね。", dmg: 10 }
     ]
   },
-  // 3. 研究者 (Geek)
+  // 3. 研究者
   {
-    id: "research", role: "理系院生", club: "AI研究室", trait: "探究心",
-    es: "深層学習を用いた画像認識精度の向上研究。学会発表。",
-    hidden_good: "【課題解決力】複雑な問題を粘り強く解き明かす", hidden_bad: "【専門バカ】専門用語で煙に巻き、対話を拒否する",
+    id: "research", role: "理系大学院生",
+    es: "{tech}を用いた研究に従事。学会発表経験あり。",
+    hidden_good: "【探究心】複雑な課題を解決する力", hidden_bad: "【専門バカ】専門用語ばかりで会話が通じない",
     deck: [
-      { tag: "deep", q: "研究の社会的意義を小学生に説明して。", a_good: "『コンピュータに人間の目を持たせて、見落としを防ぐ』技術です。", a_bad: "えーと、CNNにおけるハイパーパラメータの最適化がですね…", dmg: 10 },
-      { tag: "risk", q: "研究が行き詰まった時は？", a_good: "仮説が間違っていたと認め、アプローチをゼロから見直しました。", a_bad: "教授の指示が悪かったので、とりあえず別の実験をしてました。", dmg: 20 },
-      { tag: "value", q: "なぜ研究職ではなくビジネスへ？", a_good: "技術を論文で終わらせず、実際のサービスとして世に出したいからです。", a_bad: "研究室に残るのって結構ブラックなんで、楽に稼ぎたくて。", dmg: 10 },
-      { tag: "deep", q: "チームでの共同研究経験は？", a_good: "あります。役割分担を明確にし、Gitでコード管理を徹底しました。", a_bad: "ないです。人のコード読むの嫌いなんで。", dmg: 10 }
+      { phase: 'mid', tag: "deep", q: "研究内容をわかりやすく説明して。", a_good: "『{tech}』を使って、社会課題を解決する研究です。", a_bad: "{tech}におけるパラメータの最適化が…", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "研究が行き詰まったらどうする？", a_good: "先行研究を洗い直し、アプローチの角度を変えます。", a_bad: "とりあえず徹夜して実験を繰り返します。", dmg: 10 },
+      { phase: 'late', tag: "value", q: "なぜビジネスの世界へ？", a_good: "技術を社会実装して、実際に人の役に立たせたいからです。", a_bad: "研究室に残るよりお金が稼げそうなので。", dmg: 0 }
     ]
   },
-  // 4. 留学帰り (Global)
+  // 4. 留学生
   {
-    id: "global", role: "正規留学生", club: "米国大学", trait: "適応力",
-    es: "アメリカの大学でComputer Scienceを専攻。GPA3.8。",
-    hidden_good: "【多様性】異なる価値観を受け入れ、橋渡しができる", hidden_bad: "【出羽守】『アメリカでは〜』が口癖で日本を見下す",
+    id: "global", role: "海外正規留学生",
+    es: "海外大学で学位取得。{num}のチームをリード。",
+    hidden_good: "【多様性】異文化適応力と広い視野", hidden_bad: "【日本不適合】日本の商習慣を見下している",
     deck: [
-      { tag: "deep", q: "留学で一番の挫折は？", a_good: "ディスカッションで全く発言できず、透明人間扱いされたことです。", a_bad: "日本の食事が恋しかったことくらいですかね。勉強は余裕でした。", dmg: 10 },
-      { tag: "risk", q: "日本の古い商習慣についてどう思う？", a_good: "非効率な部分はありますが、信頼を重んじる文化は素晴らしいと思います。", a_bad: "ナンセンスですね。ハンコとかFAXとか、早く無くすべきです。", dmg: 20 },
-      { tag: "value", q: "なぜ日本で就職を？", a_good: "日本の技術力を、グローバルな視点で世界に広げたいからです。", a_bad: "ビザの関係で仕方なく。数年したらアメリカ戻ります。", dmg: 20 },
-      { tag: "check", q: "英語力はどの程度？", a_good: "ビジネスレベルの交渉が可能です。通訳なしで技術書も読めます。", a_bad: "ネイティブレベルっすよ。TOEICとか受けたことないけど。", dmg: 5 }
+      { phase: 'mid', tag: "deep", q: "留学で苦労したことは？", a_good: "ディスカッションで発言できず、悔しい思いをしたことです。", a_bad: "日本の常識が通じないことですね。日本人は遅れてるんで。", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "日本の古い体質についてどう思う？", a_good: "変えるべき点は多いですが、リスペクトを持って改革したいです。", a_bad: "ナンセンスですね。全部アメリカ流にすべきです。", dmg: 20 },
+      { phase: 'mid', tag: "value", q: "チームワークについてどう考える？", a_good: "個の違いを認め合い、補完し合うことが最強のチームだと思います。", a_bad: "個人の能力が高ければチームワークなんて要らないのでは？", dmg: 10 }
     ]
   },
-  // 5. 意識高い系 (Consul)
+  // 5. 意識高い系
   {
-    id: "consul", role: "学生団体代表", club: "SDGs推進団体", trait: "発信力",
-    es: "ビジコン優勝。社会課題解決のためのイベントを主催。",
-    hidden_good: "【ビジョナリー】高い視座を持ち、人を巻き込む力がある", hidden_bad: "【ハリボテ】横文字ばかりで中身がスカスカ",
+    id: "consul", role: "学生団体{role}",
+    es: "ビジコン優勝。{club}イベントで{result}。",
+    hidden_good: "【視座の高さ】社会課題への深い洞察", hidden_bad: "【評論家】横文字ばかりで中身がない",
     deck: [
-      { tag: "deep", q: "その施策の『ボトルネック』は？", a_good: "認知不足による集客コストの高騰でした。そこでSNS運用を見直しました。", a_bad: "えっと、マインドセットの共有がアグリーできてなくて…", dmg: 10 },
-      { tag: "risk", q: "君自身は具体的に何をしたの？", a_good: "協賛金集めのために、企業へ100件飛び込み営業をしました。", a_bad: "私は全体設計とディレクションにフルコミットしました。", dmg: 20 },
-      { tag: "deep", q: "『サステナブル』とはどういう状態？", a_good: "収益と社会貢献が両立し、補助金なしで自走できる状態です。", a_bad: "ずっと続いていく…みたいな？地球に優しい感じですね。", dmg: 10 },
-      { tag: "value", q: "働く上で大切なことは？", a_good: "顧客への本質的な価値提供です。", a_bad: "圧倒的当事者意識でバリューを出すことですね。", dmg: 5 }
+      { phase: 'mid', tag: "deep", q: "『シナジー』って具体的にどういう意味？", a_good: "AとBを組み合わせて、単なる足し算以上の成果を出すことです。", a_bad: "化学反応的な…イノベーション的なサムシングです。", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "君自身は何の作業をしたの？", a_good: "協賛金集めのために、企業へ100件飛び込み営業をしました。", a_bad: "私は全体設計とディレクションにコミットしました。", dmg: 20 },
+      { phase: 'late', tag: "value", q: "働く上で大切なことは？", a_good: "顧客への価値提供です。", a_bad: "圧倒的当事者意識とフルコミットですね。", dmg: 5 }
     ]
   },
-  // 6. キラキラ系 (Influencer)
+  // 6. キラキラ系
   {
-    id: "influencer", role: "インフルエンサー", club: "SNSメディア", trait: "感受性",
-    es: "Instagramフォロワー3万人。企業PR案件も多数担当。",
-    hidden_good: "【マーケター】市場のニーズを数字で分析できる", hidden_bad: "【承認欲求】チヤホヤされたいだけ",
+    id: "influencer", role: "SNSインフルエンサー",
+    es: "{club}活動を発信し、フォロワー{num}人達成。",
+    hidden_good: "【発信力】市場のニーズを掴むセンス", hidden_bad: "【承認欲求】チヤホヤされたいだけ",
     deck: [
-      { tag: "deep", q: "フォロワーを増やす戦略は？", a_good: "投稿時間をインサイト機能で分析し、保存率が高いコンテンツに絞りました。", a_bad: "毎日投稿して、いい感じの写真をアップし続けました！", dmg: 10 },
-      { tag: "risk", q: "地味な裏方の仕事はできる？", a_good: "はい。分析や画像編集などの地味な作業が9割なので慣れています。", a_bad: "私は表に立つタイプなので、そういうのは得意な人に任せたいです。", dmg: 20 },
-      { tag: "value", q: "仕事で何を実現したい？", a_good: "自分の発信力で、本当に良い商品を世の中に広めたいです。", a_bad: "有名になって、みんなに憧れられる存在になりたいです。", dmg: 10 },
-      { tag: "deep", q: "PR案件で気をつけていることは？", a_good: "フォロワーの信頼を損なわないよう、本当に良いと思ったものだけ紹介します。", a_bad: "単価が高い案件を選ぶことですね！", dmg: 20 }
+      { phase: 'mid', tag: "deep", q: "フォロワーを増やすための戦略は？", a_good: "投稿時間をインサイトから分析し、ターゲット層に刺さる画像を検証しました。", a_bad: "毎日投稿して、いい感じの写真をアップしました！", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "地味な裏方の仕事はできる？", a_good: "もちろんです。分析作業は地味ですが大好きです。", a_bad: "私は表に立つタイプなので、そういうのは苦手です。", dmg: 20 },
+      { phase: 'late', tag: "value", q: "仕事で何を実現したい？", a_good: "自分の発信で、良い商品を世の中に広めたいです。", a_bad: "有名になって、みんなに憧れられたいです。", dmg: 10 }
     ]
   },
-  // 7. マニュアル人間 (Robot)
+  // 7. マニュアル人間
   {
-    id: "robot", role: "事務バイト", club: "データ入力", trait: "正確性",
-    es: "事務センターで2年間勤務。ミス率0.01%以下を達成。",
-    hidden_good: "【鉄壁の実務】正確無比で信頼できる守護神", hidden_bad: "【指示待ち】言われたこと以外は一切やらない",
+    id: "robot", role: "事務{role}",
+    es: "データ入力業務でミスゼロを継続。{result}。",
+    hidden_good: "【正確無比】信頼できる実務能力", hidden_bad: "【指示待ち】言われたことしかできない",
     deck: [
-      { tag: "deep", q: "マニュアルにないトラブルが起きたら？", a_good: "類似ケースを探して対応案を作成し、上司に承認を仰ぎます。", a_bad: "社員さんが来るまで何もしません。勝手なことは禁止されてるので。", dmg: 10 },
-      { tag: "risk", q: "もっと効率的な方法を思いついたら？", a_good: "業務改善提案書を作って、チーム全体に共有します。", a_bad: "余計なことはしません。波風立てたくないので。", dmg: 20 },
-      { tag: "value", q: "仕事で大切にしていることは？", a_good: "『信頼』です。小さな約束や納期を必ず守るようにしています。", a_bad: "怒られないことですね。", dmg: 10 },
-      { tag: "deep", q: "単純作業は苦にならない？", a_good: "はい。どうすればもっと早く正確にできるか工夫するのが好きです。", a_bad: "楽なんで好きです。頭使わなくていいし。", dmg: 10 }
+      { phase: 'mid', tag: "deep", q: "マニュアルにないトラブルが起きたら？", a_good: "過去の事例を調べて対応し、事後にマニュアルを更新します。", a_bad: "社員さんが来るまで待ちます。勝手なことはしません。", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "もっと効率的な方法を思いついたら？", a_good: "提案書を作って店長に相談します。", a_bad: "余計なことはしません。波風立てたくないので。", dmg: 20 },
+      { phase: 'late', tag: "value", q: "仕事で大切にしていることは？", a_good: "信頼です。小さな約束も必ず守るようにしています。", a_bad: "怒られないことですね。", dmg: 10 }
     ]
   },
-  // 8. 完璧超人 (Perfect)
+  // 8. 完璧超人
   {
-    id: "perfect", role: "学生起業家", club: "合同会社代表", trait: "万能",
-    es: "在学中に起業し黒字化。GPA4.0。TOEIC990点。",
-    hidden_good: "【超新星】文句なしのSSランク人材", hidden_bad: "【経歴詐称】全てが嘘で塗り固められた詐欺師",
+    id: "perfect", role: "完璧な経歴",
+    es: "GPA4.0、{tech}開発経験あり、{result}。",
+    hidden_good: "【次期社長候補】文句なしのSSランク人材", hidden_bad: "【経歴詐称】全てが嘘で塗り固められている",
     deck: [
-      { tag: "deep", q: "なぜ起業したのに就職を？", a_good: "自社では扱えない規模のアセットを使って、より大きな社会課題を解決したいからです。", a_bad: "あー、まあ、社会勉強的な？一度は組織を見るのもいいかなと。", dmg: 10 },
-      { tag: "risk", q: "挫折経験はある？", a_good: "創業初期、資金ショートで仲間を解雇したことです。経営の厳しさを痛感しました。", a_bad: "ないですね。全て計画通りに来たので。", dmg: 20 },
-      { tag: "risk", q: "ここにある経歴、本当に全部やったの？", a_good: "はい。決算書や成績証明書もお見せできます。", a_bad: "（目が泳ぐ）…はい。疑うんですか？失礼ですね。", dmg: 30 },
-      { tag: "deep", q: "その事業の競合優位性は？", a_good: "独自開発したアルゴリズムと、先行者利益によるデータ蓄積です。", a_bad: "僕のカリスマ性ですかね。", dmg: 20 }
-    ]
-  },
-  // 9. 調整役 (Supporter)
-  {
-    id: "supporter", role: "サークル副代表", club: "ダンスサークル", trait: "協調性",
-    es: "150人規模のサークルで副代表として組織運営をサポート。",
-    hidden_good: "【名参謀】組織の潤滑油として不可欠な存在", hidden_bad: "【金魚のフン】主体性がなくリーダーに付いていくだけ",
-    deck: [
-      { tag: "deep", q: "なぜ副代表を選んだの？", a_good: "自分が前に出るより、人を支えることで組織に貢献したいからです。", a_bad: "代表やるのは責任重いし、目立ちたくないので。", dmg: 10 },
-      { tag: "risk", q: "代表と意見が割れたらどうする？", a_good: "納得いくまで話し合います。組織のためなら対立も恐れません。", a_bad: "代表に従います。逆らっても面倒なだけなんで。", dmg: 10 },
-      { tag: "check", q: "組織運営での工夫は？", a_good: "匿名の意見箱を設置し、言いにくい不満を吸い上げました。", a_bad: "飲み会を企画して仲良くさせました。", dmg: 5 },
-      { tag: "value", q: "あなたにとってリーダーシップとは？", a_good: "メンバーが働きやすい環境を整えることだと考えています。", a_bad: "グイグイ引っ張るカリスマ性のことですよね。私には無理です。", dmg: 10 }
-    ]
-  },
-  // 10. ハッカソン荒らし (Hacker)
-  {
-    id: "hacker", role: "エンジニア", club: "ハッカソン", trait: "実装力",
-    es: "10回のハッカソンに参加し、合計5回入賞。",
-    hidden_good: "【爆速開発】プロトタイプを短期間で形にする力", hidden_bad: "【保守性ゼロ】動けばいいだけのスパゲッティコード",
-    deck: [
-      { tag: "deep", q: "短期間で開発するコツは？", a_good: "コア機能に絞って実装し、ライブラリを最大限活用することです。", a_bad: "とりあえず動けばいいんで、コードは汚くても気にしません。", dmg: 10 },
-      { tag: "risk", q: "長期的な保守運用はやったことある？", a_good: "はい、アルバイトではレガシーコードのリファクタリングも経験しました。", a_bad: "ないっすね。作って終わりが一番楽しいんで。", dmg: 20 },
-      { tag: "check", q: "一番自信のある言語は？", a_good: "Pythonです。データ分析からWeb開発まで幅広く使えます。", a_bad: "全部使えますよ。天才なんで。", dmg: 10 },
-      { tag: "deep", q: "チーム開発で意識することは？", a_good: "コンフリクトを避けるための設計共有と、こまめなコミットです。", a_bad: "僕が全部書いた方が早いんで、基本一人でやります。", dmg: 20 }
-    ]
-  },
-  // 11. 芸術家肌 (Artist)
-  {
-    id: "artist", role: "デザイナー", club: "美大", trait: "独創性",
-    es: "デザインコンペ入賞。独自の感性でブランドをプロデュース。",
-    hidden_good: "【クリエイター】顧客視点と美意識を両立できる", hidden_bad: "【ワガママ】自分のこだわりを押し付け協調性がない",
-    deck: [
-      { tag: "deep", q: "デザインで意識していることは？", a_good: "ユーザーがどう感じるか、使いやすさと美しさのバランスです。", a_bad: "自分の魂を表現することですね。他人の評価は気にしません。", dmg: 10 },
-      { tag: "risk", q: "クライアントから大幅な修正を指示されたら？", a_good: "意図を汲み取り、より良い代案を提案してすり合わせます。", a_bad: "断ります。私の作品に対する冒涜なので。", dmg: 20 },
-      { tag: "value", q: "ビジネスとアートの違いは？", a_good: "ビジネスは課題解決、アートは自己表現だと考えています。", a_bad: "一緒じゃないですか？", dmg: 5 },
-      { tag: "check", q: "共同制作の経験は？", a_good: "エンジニアと組んでWebサイトを作りました。実装可能性も考慮します。", a_bad: "一人がいいです。邪魔されたくないんで。", dmg: 10 }
-    ]
-  },
-  // 12. 資格マニア (Learner)
-  {
-    id: "learner", role: "資格取得者", club: "自習室", trait: "学習欲",
-    es: "簿記1級、TOEIC900、基本情報など多数の資格を取得。",
-    hidden_good: "【努力家】新しい知識を吸収し実務に活かす", hidden_bad: "【ノウハウコレクター】勉強だけして行動しない",
-    deck: [
-      { tag: "deep", q: "なぜそんなに資格を取ったの？", a_good: "体系的な知識を身につけ、実務で活かすためです。", a_bad: "不安だったからです。資格があれば就職できると思って。", dmg: 10 },
-      { tag: "risk", q: "知識を実務で使った経験は？", a_good: "簿記の知識を活かして、サークルの会計フローを改善しました。", a_bad: "ないです。勉強で忙しかったので。", dmg: 20 },
-      { tag: "check", q: "次に学びたいことは？", a_good: "御社の業務に関連する〇〇の分野を深掘りしたいです。", a_bad: "とりあえず難しそうな資格なら何でも。", dmg: 5 },
-      { tag: "value", q: "勉強と仕事の違いは？", a_good: "勉強はインプット、仕事はアウトプットで価値を出すことだと思います。", a_bad: "正解があるかないか、ですかね。", dmg: 5 }
-    ]
-  },
-  // 13. 地方創生 (Local)
-  {
-    id: "local", role: "ボランティア", club: "地方創生", trait: "郷土愛",
-    es: "過疎地域の村おこしプロジェクトに参加。特産品をPR。",
-    hidden_good: "【泥臭さ】現場に入り込んで信頼を作る力", hidden_bad: "【視野狭窄】思い込みが激しくビジネス視点がない",
-    deck: [
-      { tag: "deep", q: "地元の人との関わりで大変だったことは？", a_good: "最初はよそ者扱いされましたが、毎日通って畑仕事を手伝い信頼を得ました。", a_bad: "彼らは古い考えに固執していて、説得するのが大変でした。", dmg: 10 },
-      { tag: "risk", q: "プロジェクトの成果は数字でどう出た？", a_good: "売上が前年比150%になり、観光客も月200人増えました。", a_bad: "数字とかじゃなくて、みんなの笑顔が増えたことが成果です！", dmg: 10 },
-      { tag: "value", q: "なぜ東京の企業を受けるの？", a_good: "ここでビジネススキルを磨き、将来は地方に還元したいからです。", a_bad: "やっぱり東京の方が楽しそうだからです。", dmg: 10 },
-      { tag: "check", q: "都会のスピード感についていける？", a_good: "はい。効率化すべき点と、時間をかけるべき点を使い分けます。", a_bad: "ゆっくりマイペースにやりたいですね。", dmg: 20 }
-    ]
-  },
-  // 14. 公務員試験崩れ (Public)
-  {
-    id: "public", role: "公務員志望", club: "法学部", trait: "規律性",
-    es: "公務員試験に向け法律を勉強。真面目にコツコツ取り組む。",
-    hidden_good: "【誠実さ】規律を守り堅実に業務を遂行する", hidden_bad: "【消去法】民間企業を見下しておりやる気がない",
-    deck: [
-      { tag: "deep", q: "なぜ民間企業に切り替えたの？", a_good: "よりスピード感を持って社会課題を解決したいと思ったからです。", a_bad: "公務員試験に落ちたので、仕方なくって感じです。", dmg: 20 },
-      { tag: "risk", q: "激しい競争環境でもやっていける？", a_good: "はい。目標に向けて努力し続けることには慣れています。", a_bad: "えー、ノルマとかあるんですか？あんまりキツイのはちょっと…", dmg: 20 },
-      { tag: "check", q: "得意な科目は？", a_good: "民法です。論理的な解釈力を養いました。", a_bad: "教養科目ですね。暗記が得意なので。", dmg: 5 },
-      { tag: "value", q: "どんな会社で働きたい？", a_good: "法令遵守意識が高く、誠実な商売をしている会社です。", a_bad: "潰れない会社ならどこでも。", dmg: 10 }
-    ]
-  },
-  // 15. 起業失敗 (Fail)
-  {
-    id: "fail", role: "元学生起業家", club: "スタートアップ", trait: "挑戦心",
-    es: "アプリ開発で起業するも1年で撤退。失敗から多くを学ぶ。",
-    hidden_good: "【再起力】失敗を糧に成長できるタフネス", hidden_bad: "【無責任】失敗を周りのせいにして反省していない",
-    deck: [
-      { tag: "deep", q: "撤退の理由は？", a_good: "ユーザーニーズの読み違えと、資金管理の甘さでした。", a_bad: "共同創業者が逃げ出したのと、投資家がわかってくれなかったからです。", dmg: 20 },
-      { tag: "risk", q: "また起業したいと思う？", a_good: "将来的には考えたいですが、今は御社で組織作りを学びたいです。", a_bad: "はい。いいアイデアが出たらすぐ辞めて起業します。", dmg: 10 },
-      { tag: "value", q: "この経験で得た最大の教訓は？", a_good: "『作ってから売る』のではなく『売れるものを作る』ことです。", a_bad: "人を信用しちゃダメってことですね。", dmg: 10 },
-      { tag: "check", q: "上司の指示に従える？", a_good: "はい。組織の一員としての役割を全うします。", a_bad: "納得できれば従いますけど、無能な上司なら無視します。", dmg: 20 }
-    ]
-  },
-  // 16. 高学歴無気力 (Apathy)
-  {
-    id: "apathy", role: "高学歴", club: "特になし", trait: "地頭",
-    es: "東都大学卒。特筆すべき活動はないが、論理的思考力は高い。",
-    hidden_good: "【ポテンシャル】やる気スイッチが入れば化ける", hidden_bad: "【評論家】斜に構えて何もしない",
-    deck: [
-      { tag: "deep", q: "学生時代に力を入れたことは？", a_good: "学業です。特にゼミでの議論には積極的に参加し、教授からも評価されました。", a_bad: "特にないですね。普通に授業受けて、普通に遊んでました。", dmg: 20 },
-      { tag: "risk", q: "なぜ働こうと思ったの？", a_good: "社会との接点を持ち、自分の能力を試してみたいからです。", a_bad: "働かないと生きていけないから、ですかね。", dmg: 20 },
-      { tag: "check", q: "最近関心のあるニュースは？", a_good: "生成AIの法的規制に関する議論です。技術と倫理のバランスについて考えています。", a_bad: "芸能人の不倫ニュースとかですかね。", dmg: 10 },
-      { tag: "value", q: "熱中できるものはある？", a_good: "一度ハマると突き詰めるタイプです。最近はデータ分析の勉強をしています。", a_bad: "睡眠ですかね。", dmg: 20 }
-    ]
-  },
-  // 17. コミュ力お化け (Sales)
-  {
-    id: "sales", role: "キャッチ", club: "居酒屋バイト", trait: "社交性",
-    es: "月間100万円の売上を作るトップキャッチ。圧倒的対人スキル。",
-    hidden_good: "【人たらし】誰とでも信頼関係を築ける才能", hidden_bad: "【倫理観欠如】売上のためなら平気で嘘をつく",
-    deck: [
-      { tag: "deep", q: "売るためのコツは？", a_good: "相手の懐に入り込み、信頼関係を一瞬で築くことです。", a_bad: "適当なこと言って店に連れて行けばいいんすよ。後は野となれ山となれ。", dmg: 30 },
-      { tag: "risk", q: "クレームになったことは？", a_good: "あります。誠心誠意謝罪し、逆に常連になってもらいました。", a_bad: "無視っすね。文句言う客は相手にしません。", dmg: 20 },
-      { tag: "value", q: "なぜ営業職を？", a_good: "自分の人間力で勝負できる仕事だからです。", a_bad: "歩合で稼ぎたいからです。", dmg: 5 },
-      { tag: "check", q: "ノルマに対する考え方は？", a_good: "達成すべき最低ラインであり、超えるために工夫するものだと思います。", a_bad: "バレなきゃ何してもいいって数字ですよね。", dmg: 30 }
-    ]
-  },
-  // 18. 論破王 (Debater)
-  {
-    id: "debater", role: "ディベート", club: "弁論部", trait: "論理性",
-    es: "全国ディベート大会優勝。論理的思考とプレゼンが得意。",
-    hidden_good: "【論理構築力】説得力のある提案ができる", hidden_bad: "【攻撃的】相手を言い負かすことが目的化している",
-    deck: [
-      { tag: "deep", q: "議論で大切にしていることは？", a_good: "相手の主張を正しく理解し、建設的な着地点を見つけることです。", a_bad: "相手の論理の矛盾を突いて、ぐうの音も出なくさせることですね。", dmg: 20 },
-      { tag: "risk", q: "感情的な相手にはどう対応する？", a_good: "まずは感情を受け止めて、冷静になってもらってから話します。", a_bad: "『感情論はやめてください』と論理で制圧します。", dmg: 20 },
-      { tag: "check", q: "苦手なことはある？", a_good: "理屈で割り切れない人間関係の機微などは勉強中です。", a_bad: "ないですね。論理的に考えれば全て解決するので。", dmg: 10 },
-      { tag: "value", q: "チームワークとは？", a_good: "異なる意見をぶつけ合い、より良い解を導き出すプロセスです。", a_bad: "正しい人の意見に従うことですね。つまり僕に従うことです。", dmg: 30 }
-    ]
-  },
-  // 19. データ分析 (Analyst)
-  {
-    id: "analyst", role: "データ分析", club: "統計学研究会", trait: "客観性",
-    es: "ビッグデータ解析を用いたマーケティング研究。Python活用。",
-    hidden_good: "【分析力】数字から真実を導き出し意思決定を支える", hidden_bad: "【現場軽視】データしか信じず現実を見ない",
-    deck: [
-      { tag: "deep", q: "データ分析で重要なことは？", a_good: "『仮説』を持って分析することです。数字は嘘をつきませんが、解釈は人によるので。", a_bad: "高度なアルゴリズムを使うことですね。", dmg: 10 },
-      { tag: "risk", q: "データと現場の感覚が違ったら？", a_good: "現場に足を運び、データに現れていない要因がないか確認します。", a_bad: "現場が間違っています。数字は絶対なので。", dmg: 20 },
-      { tag: "value", q: "チームでのコミュニケーションは？", a_good: "専門用語を使わず、グラフで可視化して伝えるようにしています。", a_bad: "Slackでログを残すのが一番効率的です。会話は無駄です。", dmg: 10 },
-      { tag: "check", q: "人の感情をどう扱う？", a_good: "定性データとして捉え、傾向を分析します。", a_bad: "ノイズなので無視します。", dmg: 20 }
-    ]
-  },
-  // 20. 省エネ (Efficient)
-  {
-    id: "efficient", role: "要領良し", club: "フットサル", trait: "効率性",
-    es: "最小限の努力で単位を取得し、バイトリーダーも務める。",
-    hidden_good: "【効率化】無駄を省き最短で成果を出す", hidden_bad: "【手抜き】楽することしか考えていない",
-    deck: [
-      { tag: "deep", q: "効率化のために何をした？", a_good: "優先順位をつけ、ボトルネックを解消する仕組みを作りました。", a_bad: "バレないようにサボる方法を編み出しました。", dmg: 20 },
-      { tag: "risk", q: "泥臭い仕事はできる？", a_good: "必要であればやりますが、常に自動化できないか考えます。", a_bad: "コスパ悪いんでやりたくないですね。", dmg: 20 },
-      { tag: "check", q: "あなたの強みは？", a_good: "状況を俯瞰し、最適解を素早く導き出す力です。", a_bad: "要領の良さです。テスト勉強とか一夜漬けで余裕でした。", dmg: 10 },
-      { tag: "value", q: "残業についてどう思う？", a_good: "生産性を上げて、定時内に終わらせるのがプロだと思います。", a_bad: "絶対したくないです。定時ダッシュします。", dmg: 10 }
+      { phase: 'mid', tag: "deep", q: "なぜ起業したのに就職を？", a_good: "御社のアセットを使って、より大きな社会課題を解決したいからです。", a_bad: "あー、まあ、社会勉強的な？一度は組織を見るのもいいかなと。", dmg: 10 },
+      { phase: 'mid', tag: "risk", q: "挫折経験はある？", a_good: "留学当初、英語が通じず引きこもりましたが、現地ボランティアで克服しました。", a_bad: "ないですね。全て計画通りに来たので。", dmg: 20 },
+      { phase: 'mid', tag: "risk", q: "ここにある経歴、本当に全部やったの？", a_good: "はい。詳細なポートフォリオもお見せできます。", a_bad: "（目が泳ぐ）…はい。疑うんですか？失礼ですね。", dmg: 30 }
     ]
   }
 ];
 
-// --- 2. GAME STATE ---
-const State = {
-  turn: 0,
-  maxTurn: 10,
-  trust: 100,
-  student: null,
-  deck: [],
-  history: [],
-  detected: [],
-  score: 0,
-  topic: "ice",
-  isHireDecision: false
+// --- CONSTANTS ---
+const CONST = {
+  names: ["佐藤", "鈴木", "高橋", "田中", "渡辺", "伊藤", "山本", "中村", "小林", "加藤", "吉田", "山田", "佐々木", "山口", "松本", "井上", "木村", "林", "斎藤", "清水"],
+  firsts: ["翔太", "蓮", "大樹", "美咲", "陽菜", "結衣", "健人", "陸", "湊", "蒼", "さくら", "愛", "優", "七海", "悠真", "樹", "花", "凛", "葵", "拓海"],
+  univs: ["東都大学", "京北大学", "早慶義塾", "明治帝都", "国際情報大", "ネクスト工業大", "帝都理科大", "青山学院", "立教大学", "中央大学"],
+  clubs_sport: ["テニス", "アメフト", "ラクロス", "野球", "サッカー", "ダンス", "チアリーディング", "山岳", "柔道", "剣道"],
+  clubs_culture: ["軽音", "吹奏楽", "演劇", "漫画研究", "茶道", "ボランティア", "写真", "映画", "ESS", "広告研究"],
+  roles: ["代表", "副代表", "会計", "広報", "新歓隊長", "キャプテン", "リーダー", "バイトリーダー", "創設者", "メンバー"],
+  scale: ["10名", "30名", "50名", "100名", "200名", "500名", "3名"],
+  results: ["全国大会出場", "県大会優勝", "売上120%達成", "黒字化", "会員数2倍", "満足度No.1", "コンテスト入賞", "メディア掲載", "退会率0%", "アプリリリース"],
+  tech: ["Python", "Go", "Rust", "AWS", "React", "Docker", "AI", "Blockchain"],
+  biz_terms: ["KPI", "PDCA", "LTV", "CPA", "UX", "シナジー", "アライアンス", "ボトルネック"]
 };
 
-// --- 3. ENGINE ---
+// --- 3. GAME ENGINE ---
 const Game = {
-  initInterview: function () {
-    // 1. Generate Student
+  fillTemplate: function (text, vars) {
+    if (!text) return "";
+    return text.replace(/{(\w+)}/g, (_, k) => vars[k] || `{${k}}`);
+  },
+
+  generateStudent: function () {
     const base = ARCHETYPES[Math.floor(Math.random() * ARCHETYPES.length)];
     const isHighPerformer = Math.random() > 0.5;
 
-    // ランダム生成（多様な名前・大学）
-    const names = ["佐藤", "鈴木", "高橋", "田中", "渡辺", "伊藤", "山本", "中村", "小林", "加藤", "吉田", "山田", "佐々木", "山口", "松本"];
-    const firsts = ["翔太", "蓮", "大樹", "美咲", "陽菜", "結衣", "健人", "陸", "湊", "蒼", "さくら", "愛", "優", "七海"];
-    const univs = ["東都大学", "京北大学", "早慶義塾", "明治帝都", "国際情報大", "ネクスト工業大", "帝都理科大"];
-
-    State.student = {
-      ...base,
-      name: names[Math.floor(Math.random() * names.length)] + " " + firsts[Math.floor(Math.random() * firsts.length)],
-      univ: univs[Math.floor(Math.random() * univs.length)],
-      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-      isHighPerformer: isHighPerformer,
-      hidden: isHighPerformer ? base.hidden_good : base.hidden_bad
+    const vars = {
+      name: CONST.names[Math.floor(Math.random() * CONST.names.length)] + " " + CONST.firsts[Math.floor(Math.random() * CONST.firsts.length)],
+      univ: CONST.univs[Math.floor(Math.random() * CONST.univs.length)],
+      club: Math.random() > 0.5 ? CONST.clubs_sport[Math.floor(Math.random() * CONST.clubs_sport.length)] : CONST.clubs_culture[Math.floor(Math.random() * CONST.clubs_culture.length)],
+      role: CONST.roles[Math.floor(Math.random() * CONST.roles.length)],
+      num: CONST.scale[Math.floor(Math.random() * CONST.scale.length)],
+      result: CONST.results[Math.floor(Math.random() * CONST.results.length)],
+      tech: CONST.tech[Math.floor(Math.random() * CONST.tech.length)],
+      term: CONST.biz_terms[Math.floor(Math.random() * CONST.biz_terms.length)]
     };
 
-    // 2. Build Deck (base + common)
-    State.deck = JSON.parse(JSON.stringify(base.deck)).concat(JSON.parse(JSON.stringify(COMMON_DECK)));
-    State.deck.sort(() => Math.random() - 0.5);
+    State.student = {
+      name: vars.name,
+      univ: vars.univ,
+      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+      isHighPerformer: isHighPerformer,
+      hidden: isHighPerformer ? base.hidden_good : base.hidden_bad,
+      role: this.fillTemplate(base.role, vars),
+      es: this.fillTemplate(base.es, vars)
+    };
 
-    // 3. Reset
+    // Combine Unique Deck + Common Pool
+    let rawDeck = JSON.parse(JSON.stringify(base.deck)).concat(JSON.parse(JSON.stringify(COMMON_POOL)));
+
+    // Inject Variables to all cards
+    State.deck = rawDeck.map(card => ({
+      ...card,
+      q: this.fillTemplate(card.q, vars),
+      a_good: this.fillTemplate(card.a_good, vars),
+      a_bad: this.fillTemplate(card.a_bad, vars)
+    }));
+  },
+
+  initInterview: function () {
+    this.generateStudent();
     State.turn = 0;
     State.trust = 100;
     State.detected = [];
     State.score = 0;
     State.history = [];
-    State.topic = "ice";
+    State.playedQ = []; // Reset played questions
 
     UI.showScene('scene-battle');
     UI.setupRoom();
@@ -316,9 +210,10 @@ const Game = {
 
   nextTurn: function () {
     if (State.trust <= 0) { this.finish("BAD"); return; }
-    if (State.turn > State.maxTurn) { this.finish("JUDGE"); return; }
+    if (State.turn > 10) { this.finish("JUDGE"); return; }
 
     let hand = [];
+
     if (State.turn === 0) {
       document.getElementById('b-turn').innerText = "Ice";
       document.getElementById('coach-msg').innerText = "まずはアイスブレイクで場を温めましょう";
@@ -326,21 +221,41 @@ const Game = {
     } else {
       document.getElementById('b-turn').innerText = State.turn;
 
-      // Topic switch logic
-      if (State.turn === 1) State.topic = "intro";
-      else if (State.turn === 3) State.topic = "es";
-      else if (State.turn === 6) State.topic = "deep";
+      // Determine Current Phase
+      let currentPhase = 'mid';
+      if (State.turn <= 3) currentPhase = 'early';
+      else if (State.turn >= 8) currentPhase = 'late';
 
-      document.getElementById('coach-msg').innerText = getCoachMsg(State.topic);
+      let coachMsg = "本質を見抜く質問を選んでください";
+      if (currentPhase === 'early') coachMsg = "まずは基礎的な確認を行いましょう";
+      if (currentPhase === 'late') coachMsg = "最終的な価値観の確認や、志望度の確認を行いましょう";
+      document.getElementById('coach-msg').innerText = coachMsg;
 
-      let topicCards = State.deck.filter(c => c.tag === State.topic);
-      let otherCards = State.deck.filter(c => c.tag !== State.topic);
-      hand = topicCards.concat(otherCards).slice(0, 4);
+      // Filter Deck:
+      // 1. Not played yet
+      // 2. Matches current phase OR has no phase (universal)
+      let available = State.deck.filter(c => {
+        if (State.playedQ.includes(c.q)) return false;
+        if (c.phase && c.phase !== currentPhase) return false;
+        return true;
+      });
 
-      if (hand.length < 4) {
-        let freshCommon = JSON.parse(JSON.stringify(COMMON_DECK));
-        hand = hand.concat(freshCommon).slice(0, 4);
+      // Shuffle available
+      available.sort(() => Math.random() - 0.5);
+
+      // Pick 4 unique cards
+      // If run out of phase-specific cards, try to pull from general pool avoiding PlayedQ
+      if (available.length < 4) {
+        // Fallback: relax phase constraint
+        let fallback = State.deck.filter(c => !State.playedQ.includes(c.q));
+        fallback.sort(() => Math.random() - 0.5);
+        // Merge unique items
+        fallback.forEach(c => {
+          if (available.length < 4 && !available.includes(c)) available.push(c);
+        });
       }
+
+      hand = available.slice(0, 4);
     }
 
     UI.updateHUD();
@@ -348,49 +263,30 @@ const Game = {
   },
 
   playCard: function (card) {
-    if (State.turn > 0) {
-      State.deck = State.deck.filter(c => c.q !== card.q);
-    }
+    State.playedQ.push(card.q); // Mark as played
 
     UI.addLog("user", card.q);
-
-    let answer = State.student.isHighPerformer ? card.a_good : card.a_bad;
-
-    // V20 Dynamic Interpolation: Replace placeholders with student data
-    answer = answer.replace("{name}", State.student.name)
-      .replace("{club}", State.student.club || "")
-      .replace("{role}", State.student.role || "")
-      .replace("{trait}", State.student.trait || "");
+    const answer = State.student.isHighPerformer ? card.a_good : card.a_bad;
 
     setTimeout(() => {
       UI.addLog("stu", answer);
-
       if (State.turn > 0) {
-        // Bad Performer reveals risk
         if (!State.student.isHighPerformer && (card.tag === "risk" || card.tag === "deep")) {
           if (!State.detected.includes("risk")) {
             State.detected.push("risk");
             UI.updateTraits(true);
           }
         }
-        // Good Performer reveals potential
         if (State.student.isHighPerformer && card.tag === "deep") {
           if (!State.detected.includes("good")) {
             State.detected.push("good");
             UI.updateTraits(false);
           }
         }
-
         State.trust -= card.dmg;
         if (State.trust > 100) State.trust = 100;
-
-        State.history.push({
-          turn: State.turn, q: card.q, a: answer,
-          score: card.dmg > 0 ? "bad" : "good"
-        });
+        State.history.push({ turn: State.turn, q: card.q, a: answer, score: card.dmg > 0 ? "bad" : "good" });
       }
-
-      if (State.turn > 0 && card.tag === "es") State.topic = "deep";
       State.turn++;
       this.nextTurn();
     }, 800);
@@ -413,28 +309,26 @@ const Game = {
   showResult: function (type) {
     UI.showScene('scene-result');
     UI.renderReview();
-
     let grade = "C", fb = "", badge = "FAILED", badgeClass = "lose";
     const s = State.student;
 
     if (type === "GAME_OVER") {
       grade = "D";
-      fb = "圧迫面接により信頼関係が崩壊しました。心理的安全性を担保しないと、候補者の本音は引き出せません。";
+      fb = "圧迫面接により信頼関係が崩壊しました。";
     } else {
       const isCorrect = (s.isHighPerformer && State.isHireDecision) || (!s.isHighPerformer && !State.isHireDecision);
       if (isCorrect) {
         grade = "S"; badge = "EXCELLENT"; badgeClass = "win";
-        if (s.isHighPerformer) fb = "素晴らしい判断です！行動面接（BEI）を通じて、高いコンピテンシーを見抜きました。彼/彼女はエース級の活躍をするでしょう。";
-        else fb = "ナイス判断です！表面的な経歴に惑わされず、リスク（Red Flags）を的確に見抜きました。採用ミスマッチを防ぎました。";
-        let current = parseInt(localStorage.getItem('ni_hired_v20') || 0);
-        localStorage.setItem('ni_hired_v20', current + 1);
+        if (s.isHighPerformer) fb = "素晴らしい判断です！高いコンピテンシーを見抜きました。";
+        else fb = "ナイス判断です！リスクを的確に見抜きました。";
+        let current = parseInt(localStorage.getItem('ni_hired_v21') || 0);
+        localStorage.setItem('ni_hired_v21', current + 1);
       } else {
         grade = "B";
-        if (s.isHighPerformer) fb = "惜しい判断です。この候補者は優秀でしたが、深掘りが足りずポテンシャルに気づけませんでした。ハロー効果やバイアスに注意しましょう。";
-        else fb = "危険な採用です。この候補者には『具体性のなさ』や『他責』の兆候がありました。構造化面接で『なぜ？』を繰り返して本質を見極めましょう。";
+        if (s.isHighPerformer) fb = "惜しい判断です。この候補者は優秀でした。";
+        else fb = "危険な採用です。リスクを見落としています。";
       }
     }
-
     document.getElementById('res-grade').innerText = grade;
     document.getElementById('res-badge').innerText = badge;
     document.getElementById('res-badge').className = `result-badge ${badgeClass}`;
@@ -448,22 +342,18 @@ const Game = {
   }
 };
 
-function getCoachMsg(topic) {
-  if (topic === "intro") return "まずは志望動機や背景を聞いてみましょう";
-  if (topic === "es") return "ESの内容について具体的に聞いてみましょう";
-  if (topic === "deep") return "行動の理由や深層心理を深掘りしてください";
-  return "本質を見抜く質問を選んでください";
-}
+const State = {
+  turn: 0, trust: 100, student: null, deck: [], history: [], detected: [], score: 0,
+  playedQ: [], isHireDecision: false
+};
 
-// --- 4. UI ---
 const UI = {
   showScene: function (id) {
     document.querySelectorAll('.scene').forEach(el => el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if (id === 'scene-dash') { document.getElementById('d-score').innerText = localStorage.getItem('ni_hired_v20') || 0; }
+    if (id === 'scene-dash') { document.getElementById('d-score').innerText = localStorage.getItem('ni_hired_v21') || 0; }
   },
   toDash: function () { this.showScene('scene-dash'); },
-
   setupRoom: function () {
     const s = State.student;
     document.getElementById('c-name').innerText = s.name;
@@ -473,54 +363,45 @@ const UI = {
     document.getElementById('c-traits-list').innerHTML = '<span class="trait-empty">まだ見抜いていません</span>';
     document.getElementById('chat-container').innerHTML = '';
   },
-
   updateTraits: function (isBad) {
     const traitText = isBad ? "⚠️ リスク検知" : "✨ ポテンシャル発見";
     const css = isBad ? "trait-badge trait-bad" : "trait-badge";
     document.getElementById('c-traits-list').innerHTML = `<span class="${css}">${traitText}</span>`;
   },
-
   renderOptions: function (cards) {
     const grid = document.getElementById('options-grid');
     grid.innerHTML = "";
     cards.forEach(card => {
       const btn = document.createElement('button');
       btn.className = "cmd-btn";
-
-      let cat = "質問"; let cls = "";
-
-      if (card.tag === "care" || card.tag === "ice") { cat = "✨ 共感"; cls = "cat-care"; }
-      else if (card.tag === "risk") { cat = "⚠️ 追求"; cls = "cat-risk"; }
-      else if (card.tag === "deep") { cat = "🔍 深掘り"; cls = "cat-deep"; }
+      let cat = "質問";
+      if (card.tag === "care" || card.tag === "ice") { cat = "✨ 共感"; }
+      else if (card.tag === "risk") { cat = "⚠️ 追求"; }
+      else if (card.tag === "deep") { cat = "🔍 深掘り"; }
+      else if (card.tag === "intro") { cat = "📝 確認"; }
+      else if (card.tag === "value") { cat = "💎 価値観"; }
 
       btn.innerHTML = `<span class="cmd-head" style="color:var(--primary)">${cat}</span><span class="cmd-body">${card.q}</span>`;
       btn.onclick = () => Game.playCard(card);
       grid.appendChild(btn);
     });
   },
-
   addLog: function (who, text) {
     const box = document.getElementById('chat-container');
     const div = document.createElement('div');
     div.className = `bubble ${who}`;
     div.innerText = text;
     box.appendChild(div);
-
     setTimeout(() => {
       const main = document.getElementById('main-scroll');
-      main.scrollTo({
-        top: box.scrollHeight,
-        behavior: 'smooth'
-      });
+      main.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
     }, 100);
   },
-
   updateHUD: function () {
     document.getElementById('b-turn').innerText = State.turn;
     document.getElementById('b-trust-val').innerText = State.trust + "%";
     document.getElementById('b-trust-bar').style.width = Math.max(0, State.trust) + "%";
   },
-
   renderReview: function () {
     const list = document.getElementById('review-list');
     list.innerHTML = "";
@@ -531,7 +412,6 @@ const UI = {
       list.appendChild(div);
     });
   },
-
   switchTab: function (name) {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-body').forEach(c => c.classList.remove('active'));

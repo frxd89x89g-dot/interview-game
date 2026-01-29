@@ -469,7 +469,7 @@ body {
 .tab-body {
   display: none;
   text-align: left;
-  max-height: 350px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
